@@ -1,39 +1,36 @@
 #include "Graphics.h"
 #include <memory>
+#include <vmchset.h>
+#include <vmstdlib.h>
 
-Graphics::Graphics(SDL_Renderer* renderer)
+Graphics::Graphics(VMINT layer_handle, VMUINT8* layer_buf)
 {
-    this->renderer = renderer;
-    this->currentColor = { 0, 0, 0, 255 };
+    this->layer_handle = layer_handle;
+    this->layer_buf = layer_buf;
+    this->currentColor.vm_color_565 = VM_COLOR_888_TO_565(0, 0, 0);
+    vm_graphic_setcolor(&this->currentColor);
     this->font = nullptr;
 }
 
 void Graphics::drawString(const std::string& s, int x, int y, int anchor)
 {
-    SDL_Surface* surfaceMessage = TTF_RenderText_Blended(font->getTtfFont(), s.c_str(), currentColor);
-    SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+    VMWCHAR wstr[200];
+    vm_ascii_to_ucs2(wstr, s.size() * 2 + 2, (VMSTR)s.c_str());
 
     int width, height;
-    if (TTF_SizeText(font->getTtfFont(), s.c_str(), &width, &height) == -1)
-        throw std::runtime_error(TTF_GetError());
+    width = vm_graphic_get_string_width(wstr);
+    height = vm_graphic_get_string_height(wstr);
 
     x = getAnchorX(x, width, anchor);
     y = getAnchorY(y, height, anchor);
-    SDL_Rect dstRect { x, y, width, height };
 
-    SDL_RenderCopy(renderer, message, nullptr, &dstRect);
-
-    SDL_FreeSurface(surfaceMessage);
-    SDL_DestroyTexture(message);
+    vm_graphic_textout_to_layer(layer_handle, x, y, wstr, vm_wstrlen(wstr));
 }
 
 void Graphics::setColor(int r, int g, int b)
 {
-    currentColor.r = r;
-    currentColor.g = g;
-    currentColor.b = b;
-    currentColor.a = 255;
-    SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
+    currentColor.vm_color_565 = VM_COLOR_888_TO_565(r, g, b);
+    vm_graphic_setcolor(&currentColor);
 }
 
 void Graphics::setFont(std::shared_ptr<Font> font)
@@ -48,8 +45,7 @@ std::shared_ptr<Font> Graphics::getFont() const
 
 void Graphics::setClip(int x, int y, int w, int h)
 {
-    SDL_Rect clipRect { x, y, w, h };
-    SDL_RenderSetClipRect(renderer, &clipRect);
+    vm_graphic_set_clip(0, 0, w, h);
 }
 
 void Graphics::drawChar(char c, int x, int y, int anchor)
@@ -59,8 +55,7 @@ void Graphics::drawChar(char c, int x, int y, int anchor)
 
 void Graphics::fillRect(int x, int y, int w, int h)
 {
-    SDL_Rect rect { x, y, w, h };
-    SDL_RenderFillRect(renderer, &rect);
+    vm_graphic_fill_rect_ex(layer_handle, x, y, w, h);
 }
 
 /**
@@ -225,22 +220,22 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
 
 void Graphics::_putpixel(int x, int y)
 {
-    SDL_RenderDrawPoint(renderer, x, y);
+    vm_graphic_set_pixel_ex(layer_handle, x, y);
 }
 
 void Graphics::drawLine(int x1, int y1, int x2, int y2)
 {
-    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+    vm_graphic_line_ex(layer_handle, x1, y1, x2, y2);
 }
 
 void Graphics::drawImage(Image* const image, int x, int y, int anchor)
 {
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
+    //SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
     x = getAnchorX(x, image->getWidth(), anchor);
     y = getAnchorY(y, image->getHeight(), anchor);
-    SDL_Rect dstRect { x, y, image->getWidth(), image->getHeight() };
-    SDL_RenderCopy(renderer, texture, 0, &dstRect);
-    SDL_DestroyTexture(texture);
+    //SDL_Rect dstRect { x, y, image->getWidth(), image->getHeight() };
+   // SDL_RenderCopy(renderer, texture, 0, &dstRect);
+    //SDL_DestroyTexture(texture);
 }
 
 int Graphics::getAnchorX(int x, int size, int anchor)

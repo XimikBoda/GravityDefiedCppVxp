@@ -5,9 +5,6 @@
 #include <iostream>
 #include <string>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 #include "Image.h"
 #include "Font.h"
 
@@ -17,9 +14,10 @@ class Image;
 
 class Graphics {
 private:
-    SDL_Renderer* renderer;
+    VMINT layer_handle = -1;
+    VMUINT8* layer_buf = 0;
     std::shared_ptr<Font> font;
-    SDL_Color currentColor;
+    vm_graphic_color currentColor;
     // void _ellipse(int cx, int cy, int xradius, int yradius);
     void _putpixel(int x, int y);
 
@@ -33,7 +31,7 @@ public:
         BOTTOM = 32,
         BASELINE = 64
     };
-    Graphics(SDL_Renderer* renderer);
+    Graphics(VMINT layer_handle, VMUINT8* layer_buf);
     void drawString(const std::string& s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
     void setFont(std::shared_ptr<Font> font);
