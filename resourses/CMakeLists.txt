@@ -3,8 +3,17 @@ cmake_minimum_required (VERSION 3.8)
 set(PROJECT_NAME "resourses")
 
 set(RESOURSES_FILES
-      demo.png
-      demo.txt
+   bluearm.png
+   bluebody.png
+   blueleg.png
+   engine.png
+   fender.png
+   helmet.png
+   levels.mrg
+   logo.png
+   raster.png
+   splash.png
+   sprites.png
 )
 
 add_custom_command( # repack triger 
