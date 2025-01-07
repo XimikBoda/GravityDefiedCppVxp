@@ -47,7 +47,7 @@ void Canvas::repaint()
 {
     // IMPROVE two lines below is a hack to make the game work in one thread
     paint(graphics.get());
-    impl->processEvents();
+    //impl->processEvents();
 
     impl->repaint();
 }

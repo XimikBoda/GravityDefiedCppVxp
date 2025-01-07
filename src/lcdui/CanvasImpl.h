@@ -15,8 +15,6 @@ private:
     int width = 0;
     int height = 0;
 
-    //static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
-
 public:
     CanvasImpl(Canvas* canvas);
     ~CanvasImpl();

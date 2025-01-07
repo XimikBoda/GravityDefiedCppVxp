@@ -5,57 +5,57 @@
 
 Graphics::Graphics(VMINT layer_handle)
 {
-    this->layer_handle = layer_handle;
-    this->layer_buf = (VMUINT8*)vm_graphic_get_layer_buffer(layer_handle);
-    this->currentColor.vm_color_565 = VM_COLOR_888_TO_565(0, 0, 0);
-    vm_graphic_setcolor(&this->currentColor);
-    this->font = nullptr;
+	this->layer_handle = layer_handle;
+	this->layer_buf = (VMUINT8*)vm_graphic_get_layer_buffer(layer_handle);
+	this->currentColor.vm_color_565 = VM_COLOR_888_TO_565(0, 0, 0);
+	vm_graphic_setcolor(&this->currentColor);
+	this->font = nullptr;
 }
 
 void Graphics::drawString(const std::string& s, int x, int y, int anchor)
 {
-    VMWCHAR wstr[200];
-    vm_ascii_to_ucs2(wstr, s.size() * 2 + 2, (VMSTR)s.c_str());
+	VMWCHAR wstr[200];
+	vm_ascii_to_ucs2(wstr, s.size() * 2 + 2, (VMSTR)s.c_str());
 
-    int width, height;
-    width = vm_graphic_get_string_width(wstr);
-    height = vm_graphic_get_string_height(wstr);
+	int width, height;
+	width = vm_graphic_get_string_width(wstr);
+	height = vm_graphic_get_string_height(wstr);
 
-    x = getAnchorX(x, width, anchor);
-    y = getAnchorY(y, height, anchor);
+	x = getAnchorX(x, width, anchor);
+	y = getAnchorY(y, height, anchor);
 
-    vm_graphic_textout_to_layer(layer_handle, x, y, wstr, vm_wstrlen(wstr));
+	vm_graphic_textout_to_layer(layer_handle, x, y, wstr, vm_wstrlen(wstr));
 }
 
 void Graphics::setColor(int r, int g, int b)
 {
-    currentColor.vm_color_565 = VM_COLOR_888_TO_565(r, g, b);
-    vm_graphic_setcolor(&currentColor);
+	currentColor.vm_color_565 = VM_COLOR_888_TO_565(r, g, b);
+	vm_graphic_setcolor(&currentColor);
 }
 
 void Graphics::setFont(std::shared_ptr<Font> font)
 {
-    this->font = font;
+	this->font = font;
 }
 
 std::shared_ptr<Font> Graphics::getFont() const
 {
-    return font;
+	return font;
 }
 
 void Graphics::setClip(int x, int y, int w, int h)
 {
-    vm_graphic_set_clip(0, 0, w, h);
+	vm_graphic_set_clip(x, y, w + x - 1, h + y - 1);
 }
 
 void Graphics::drawChar(char c, int x, int y, int anchor)
 {
-    drawString(std::string(1, c), x, y, anchor);
+	drawString(std::string(1, c), x, y, anchor);
 }
 
 void Graphics::fillRect(int x, int y, int w, int h)
 {
-    vm_graphic_fill_rect_ex(layer_handle, x, y, w, h);
+	vm_graphic_fill_rect_ex(layer_handle, x, y, w, h);
 }
 
 /**
@@ -87,28 +87,28 @@ void Graphics::fillRect(int x, int y, int w, int h)
  */
 void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int arcAngle)
 {
-    // Draws an elliptical arc left-top at (x, y), with axes given by
-    // xradius and yradius, traveling from startAngle to endangle.
-    // Bresenham-based if complete
-    int xradius = width / 2, yradius = heigth / 2;
-    x += xradius;
-    y += yradius;
-    if (xradius == 0 && yradius == 0) {
-        return;
-    }
+	// Draws an elliptical arc left-top at (x, y), with axes given by
+	// xradius and yradius, traveling from startAngle to endangle.
+	// Bresenham-based if complete
+	int xradius = width / 2, yradius = heigth / 2;
+	x += xradius;
+	y += yradius;
+	if (xradius == 0 && yradius == 0) {
+		return;
+	}
 
-    // draw complete ellipse if (0, 360) specified
-    // if (startAngle == 0 && arcAngle == 360) {
-    //     _ellipse(x, y, xradius, yradius);
-    //     return;
-    // }
+	// draw complete ellipse if (0, 360) specified
+	// if (startAngle == 0 && arcAngle == 360) {
+	//     _ellipse(x, y, xradius, yradius);
+	//     return;
+	// }
 
-    for (int angle = startAngle; angle < startAngle + arcAngle; angle++) {
-        drawLine(x + int(xradius * cos(angle * PI_CONV)),
-            y - int(yradius * sin(angle * PI_CONV)),
-            x + int(xradius * cos((angle + 1) * PI_CONV)),
-            y - int(yradius * sin((angle + 1) * PI_CONV)));
-    }
+	for (int angle = startAngle; angle < startAngle + arcAngle; angle++) {
+		drawLine(x + int(xradius * cos(angle * PI_CONV)),
+			y - int(yradius * sin(angle * PI_CONV)),
+			x + int(xradius * cos((angle + 1) * PI_CONV)),
+			y - int(yradius * sin((angle + 1) * PI_CONV)));
+	}
 }
 
 // void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
@@ -161,105 +161,105 @@ void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int 
 
 int to_360(int ang)
 {
-    // if (ang != 0 && ang % 360 == 0) {
-    //     ang = 360;
-    // } else {
-    //     ang %= 360;
-    // }
-    if (ang >= 0 && ang <= 360) {
-        return ang;
-    }
-    if (ang < 0) {
-        ang += 360;
-    }
-    return ang;
+	// if (ang != 0 && ang % 360 == 0) {
+	//     ang = 360;
+	// } else {
+	//     ang %= 360;
+	// }
+	if (ang >= 0 && ang <= 360) {
+		return ang;
+	}
+	if (ang < 0) {
+		ang += 360;
+	}
+	return ang;
 }
 
 void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
 {
-    int endAngle = startAngle + arcAngle;
-    // startAngle = norm_ang(startAngle);
-    // endAngle = norm_ang(endAngle);
-    // SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
-    double a = w / 2.0, b = h / 2.0;
-    double e = sqrt(1.0 - (b * b) / (a * a));
-    for (int _y = y - b; _y < y + b; _y++) {
-        for (int _x = x - a; _x < x + a; _x++) {
-            // _putpixel(_x, _y);
-            // std::cout << atan2(_y, _x) << "\n";
-            // SDL_Log("_y = %d, _x = %d atan2 = %lf\n", _y, _x, atan2(_y - y, _x - x));
-            // if (atan2(_y - y, _x - x) >= startAngle*PI_CONV && atan2(_y - y, _x - x) <= endAngle*PI_CONV) {
-            //     _putpixel(_x, _y);
-            // }
-            // if (atan2(_y - y, _x - x) < 3.14/2.0) {
-            //     _putpixel(_x, _y);
-            // }
-            double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
+	int endAngle = startAngle + arcAngle;
+	// startAngle = norm_ang(startAngle);
+	// endAngle = norm_ang(endAngle);
+	// SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
+	double a = w / 2.0, b = h / 2.0;
+	double e = sqrt(1.0 - (b * b) / (a * a));
+	for (int _y = y - b; _y < y + b; _y++) {
+		for (int _x = x - a; _x < x + a; _x++) {
+			// _putpixel(_x, _y);
+			// std::cout << atan2(_y, _x) << "\n";
+			// SDL_Log("_y = %d, _x = %d atan2 = %lf\n", _y, _x, atan2(_y - y, _x - x));
+			// if (atan2(_y - y, _x - x) >= startAngle*PI_CONV && atan2(_y - y, _x - x) <= endAngle*PI_CONV) {
+			//     _putpixel(_x, _y);
+			// }
+			// if (atan2(_y - y, _x - x) < 3.14/2.0) {
+			//     _putpixel(_x, _y);
+			// }
+			double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
 
-            // double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
-            // double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
-            double rad = b * b / (1 - e * e * cos(ang) * cos(ang));
-            double dist = ((_x - x) * (_x - x) + (_y - y) * (_y - y));
+			// double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
+			// double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
+			double rad = b * b / (1 - e * e * cos(ang) * cos(ang));
+			double dist = ((_x - x) * (_x - x) + (_y - y) * (_y - y));
 
-            int ang2 = to_360(ang / PI_CONV);
+			int ang2 = to_360(ang / PI_CONV);
 
-            if (ang2 >= to_360(startAngle)
-                && ang2 <= to_360(endAngle)
-                && dist <= rad) {
-                _putpixel(_x, _y);
-            }
+			if (ang2 >= to_360(startAngle)
+				&& ang2 <= to_360(endAngle)
+				&& dist <= rad) {
+				_putpixel(_x, _y);
+			}
 
-            if (endAngle > 360) {
-                if (ang2 < endAngle % 360 && dist <= rad) {
-                    _putpixel(_x, _y);
-                }
-            }
-        }
-    }
+			if (endAngle > 360) {
+				if (ang2 < endAngle % 360 && dist <= rad) {
+					_putpixel(_x, _y);
+				}
+			}
+		}
+	}
 }
 
 void Graphics::_putpixel(int x, int y)
 {
-    vm_graphic_set_pixel_ex(layer_handle, x, y);
+	vm_graphic_set_pixel_ex(layer_handle, x, y);
 }
 
 void Graphics::drawLine(int x1, int y1, int x2, int y2)
 {
-    vm_graphic_line_ex(layer_handle, x1, y1, x2, y2);
+	vm_graphic_line_ex(layer_handle, x1, y1, x2, y2);
 }
 
 void Graphics::drawImage(Image* const image, int x, int y, int anchor)
 {
-    x = getAnchorX(x, image->getWidth(), anchor);
-    y = getAnchorY(y, image->getHeight(), anchor);
+	x = getAnchorX(x, image->getWidth(), anchor);
+	y = getAnchorY(y, image->getHeight(), anchor);
 
-    vm_graphic_blt(layer_buf, x, y, image->getSurface(), 0, 0, image->getWidth(), image->getHeight(), 1);
+	vm_graphic_blt(layer_buf, x, y, image->getSurface(), 0, 0, image->getWidth(), image->getHeight(), 1);
 }
 
 int Graphics::getAnchorX(int x, int size, int anchor)
 {
-    if ((anchor & LEFT) != 0) {
-        return x;
-    }
-    if ((anchor & RIGHT) != 0) {
-        return x - size;
-    }
-    if ((anchor & HCENTER) != 0) {
-        return x - size / 2;
-    }
-    throw std::runtime_error("unknown xanchor = " + std::to_string(anchor));
+	if ((anchor & LEFT) != 0) {
+		return x;
+	}
+	if ((anchor & RIGHT) != 0) {
+		return x - size;
+	}
+	if ((anchor & HCENTER) != 0) {
+		return x - size / 2;
+	}
+	throw std::runtime_error("unknown xanchor = " + std::to_string(anchor));
 }
 
 int Graphics::getAnchorY(int y, int size, int anchor)
 {
-    if ((anchor & TOP) != 0) {
-        return y;
-    }
-    if ((anchor & BOTTOM) != 0) {
-        return y - size;
-    }
-    if ((anchor & VCENTER) != 0) {
-        return y - size / 2;
-    }
-    throw std::runtime_error("unknown yanchor = " + std::to_string(anchor));
+	if ((anchor & TOP) != 0) {
+		return y;
+	}
+	if ((anchor & BOTTOM) != 0) {
+		return y - size;
+	}
+	if ((anchor & VCENTER) != 0) {
+		return y - size / 2;
+	}
+	throw std::runtime_error("unknown yanchor = " + std::to_string(anchor));
 }

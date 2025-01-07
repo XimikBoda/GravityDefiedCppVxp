@@ -7,13 +7,13 @@
 
 int main(int argc, char** argv)
 {
-    try {
+    //try {
         std::unique_ptr<Micro> micro = std::make_unique<Micro>();
         micro->startApp(argc, argv);
-    } catch (std::exception& e) {
+    /*} catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
         return EXIT_FAILURE;
-    }
+    }*/
 
     return EXIT_SUCCESS;
 };
