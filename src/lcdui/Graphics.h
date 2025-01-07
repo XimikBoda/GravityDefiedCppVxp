@@ -31,7 +31,7 @@ public:
         BOTTOM = 32,
         BASELINE = 64
     };
-    Graphics(VMINT layer_handle, VMUINT8* layer_buf);
+    Graphics(VMINT layer_handle);
     void drawString(const std::string& s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
     void setFont(std::shared_ptr<Font> font);

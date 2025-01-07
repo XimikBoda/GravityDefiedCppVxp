@@ -3,10 +3,10 @@
 #include <vmchset.h>
 #include <vmstdlib.h>
 
-Graphics::Graphics(VMINT layer_handle, VMUINT8* layer_buf)
+Graphics::Graphics(VMINT layer_handle)
 {
     this->layer_handle = layer_handle;
-    this->layer_buf = layer_buf;
+    this->layer_buf = (VMUINT8*)vm_graphic_get_layer_buffer(layer_handle);
     this->currentColor.vm_color_565 = VM_COLOR_888_TO_565(0, 0, 0);
     vm_graphic_setcolor(&this->currentColor);
     this->font = nullptr;
@@ -230,12 +230,10 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2)
 
 void Graphics::drawImage(Image* const image, int x, int y, int anchor)
 {
-    //SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
     x = getAnchorX(x, image->getWidth(), anchor);
     y = getAnchorY(y, image->getHeight(), anchor);
-    //SDL_Rect dstRect { x, y, image->getWidth(), image->getHeight() };
-   // SDL_RenderCopy(renderer, texture, 0, &dstRect);
-    //SDL_DestroyTexture(texture);
+
+    vm_graphic_blt(layer_buf, x, y, image->getSurface(), 0, 0, image->getWidth(), image->getHeight(), 1);
 }
 
 int Graphics::getAnchorX(int x, int size, int anchor)
