@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <string>
+
+#include <vmgraph.h>
 
 class Canvas;
 
@@ -12,13 +12,10 @@ class CanvasImpl {
 private:
     Canvas* canvas;
 
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    int width = 0;
+    int height = 0;
 
-    const int width = 640;
-    const int height = 480;
-
-    static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
+    //static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
 
 public:
     CanvasImpl(Canvas* canvas);
@@ -28,7 +25,7 @@ public:
     int getWidth();
     int getHeight();
 
-    SDL_Renderer* getRenderer();
+    VMINT getRenderer();
     void processEvents();
     void setWindowTitle(const std::string& title);
 };
