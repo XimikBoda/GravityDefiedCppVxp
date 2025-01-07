@@ -2,76 +2,62 @@
 
 #include <stdexcept>
 
-CMRC_DECLARE(assets);
+#include <vmgraph.h>
+#include <vmchset.h>
 
 Font::Font(FontStyle style, FontSize pointSize)
 {
-    if (!ttfRwOps) {
-        cmrc::embedded_filesystem internalFs = cmrc::assets::get_filesystem();
-        cmrc::file fileData = internalFs.open("FontSansSerif.ttf");
-        SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
-        if (!raw) {
-            throw std::runtime_error(SDL_GetError());
-        }
+	this->style = style;
+	size = pointSize;
 
-        ttfRwOps = raw;
-    }
+	setFont();
+	int realSize = getRealFontSize(pointSize);
 
-    int realSize = getRealFontSize(pointSize);
-    TTF_Font* font = TTF_OpenFontRW(ttfRwOps, SDL_TRUE, realSize);
-    TTF_SetFontStyle(font, style);
-    this->ttfFont = font;
-    this->height = realSize;
+	this->height = realSize;
 }
 
 Font::~Font()
 {
-    TTF_CloseFont(ttfFont);
 }
 
 int Font::getBaselinePosition() const
 {
-    return height;
+	return height;
 }
 
 int Font::getHeight() const
 {
-    return height;
+	return height;
 }
 
-TTF_Font* Font::getTtfFont() const
-{
-    return ttfFont;
+void Font::setFont() const {
+	vm_graphic_set_font((font_size_t)size);
+	vm_font_set_font_style(style == STYLE_BOLD, style == STYLE_ITALIC, 0);
 }
 
 int Font::charWidth(char c)
 {
-    return stringWidth(std::string(1, c));
+	return stringWidth(std::string(1, c));
 }
 
 int Font::stringWidth(const std::string& s)
 {
-    int width, height;
-    if (TTF_SizeText(ttfFont, s.c_str(), &width, &height) == -1)
-        throw std::runtime_error(TTF_GetError());
-    return width;
+	int width = 0;
+
+	VMWCHAR wstr[200];
+	vm_ascii_to_ucs2(wstr, s.size() * 2 + 2, (VMSTR)s.c_str());
+	setFont();
+
+	width = vm_graphic_get_string_width(wstr);
+	return width;
 }
 
 int Font::substringWidth(const std::string& string, int offset, int len)
 {
-    return stringWidth(string.substr(offset, len));
+	return stringWidth(string.substr(offset, len));
 }
 
 int Font::getRealFontSize(FontSize size)
 {
-    switch (size) {
-    case SIZE_LARGE:
-        return 32;
-    case SIZE_MEDIUM:
-        return 16;
-    case SIZE_SMALL:
-        return 12;
-    default:
-        throw std::runtime_error("unknown font size: " + std::to_string(size));
-    }
+	return vm_graphic_get_character_height();
 }

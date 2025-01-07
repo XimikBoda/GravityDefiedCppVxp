@@ -17,6 +17,8 @@ void Graphics::drawString(const std::string& s, int x, int y, int anchor)
 	VMWCHAR wstr[200];
 	vm_ascii_to_ucs2(wstr, s.size() * 2 + 2, (VMSTR)s.c_str());
 
+	font->setFont();
+
 	int width, height;
 	width = vm_graphic_get_string_width(wstr);
 	height = vm_graphic_get_string_height(wstr);
