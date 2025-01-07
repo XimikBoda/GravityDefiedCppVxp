@@ -3,63 +3,45 @@
 #include <stdexcept>
 #include <string>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cmrc/cmrc.hpp>
-
-CMRC_DECLARE(assets);
+#include <vmgraph.h>
+#include <vmres.h>
 
 Image::Image(int width, int height)
 {
-    SDL_Surface* surf = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-    if (!surf) {
-        throw std::runtime_error(SDL_GetError());
-    }
+    this->surface = (VMUINT8*)vm_graphic_create_canvas(width, height);
 
-    this->surface = surf;
+    this->width = width;
+    this->height = height;
 }
 
 Image::Image(const std::string& embeddedPath)
 {
-    cmrc::embedded_filesystem embeddedFs = cmrc::assets::get_filesystem();
-    cmrc::file fileData = embeddedFs.open(embeddedPath);
+    VMINT size = 0;
+    VMUINT8* res = vm_load_resource((char*)embeddedPath.c_str(), &size);
+    this->surface = (VMUINT8*)vm_graphic_load_image(res, size);
+    vm_free(res);
 
-    SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
-    if (!raw) {
-        throw std::runtime_error(SDL_GetError());
-    }
-
-    SDL_Surface* surf = IMG_Load_RW(raw, SDL_TRUE);
-    if (!surf) {
-        throw std::runtime_error(IMG_GetError());
-    }
-
-    SDL_Surface* surf_conv = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA32, 0);
-    SDL_FreeSurface(surf);
-
-    if (!surf_conv) {
-        throw std::runtime_error(SDL_GetError());
-    }
-
-    this->surface = surf_conv;
+    frame_prop *prop = vm_graphic_get_img_property((VMINT)this->surface, 1);
+    this->width = prop->width;
+    this->height = prop->height;
 }
 
 Image::~Image()
 {
-    SDL_FreeSurface(this->surface);
+    vm_graphic_release_canvas((VMINT)this->surface);
 }
 
 int Image::getWidth() const
 {
-    return this->surface->w;
+    return this->width;
 }
 
 int Image::getHeight() const
 {
-    return this->surface->h;
+    return this->height;
 }
 
-SDL_Surface* Image::getSurface() const
+VMUINT8* Image::getSurface() const
 {
     return this->surface;
 }

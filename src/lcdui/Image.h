@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
-#include <SDL2/SDL.h>
+
+#include <vmgraph.h>
 
 class Image {
 private:
-    SDL_Surface* surface;
-
+    VMUINT8* surface = 0;
+    int width = 0, height = 0;
 public:
     Image(const std::string& embeddedPath);
     Image(int width, int height);
@@ -14,5 +15,5 @@ public:
 
     int getWidth() const;
     int getHeight() const;
-    SDL_Surface* getSurface() const;
+    VMUINT8* getSurface() const;
 };
