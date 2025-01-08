@@ -6,7 +6,7 @@
 
 void _exit(int c) {
 	vm_exit_app();
-	thread_next();
+	thread_end();
 }
 void abort() {
 	_exit(0);

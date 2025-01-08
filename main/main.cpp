@@ -5,6 +5,7 @@
 #include "vmstdlib.h"
 #include "vm4res.h"
 #include "vmres.h"
+#include <vmtimer.h>
 
 extern "C" {
 #include <thread.h>
@@ -25,6 +26,13 @@ void start_point(void) {
 	char* arg = "";
 
 	main(1, &arg);
+
+	vm_exit_app();
+	thread_end();
+}
+
+static void timer(int timer_id) {
+	thread_next();
 }
 
 void vm_main(void) {
@@ -37,6 +45,8 @@ void vm_main(void) {
 	layer_hdl[0] = vm_graphic_create_layer(0, 0, screen_w, screen_h, -1);
 	layer_buf = vm_graphic_get_layer_buffer(layer_hdl[0]);
 	vm_graphic_set_clip(0, 0, screen_w, screen_h);
+
+	vm_create_timer(1000/60, timer);
 
 	thread_init();
 	thread_create(0x40000, start_point);

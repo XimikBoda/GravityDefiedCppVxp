@@ -18,10 +18,10 @@ public:
 		if (mode & std::ios::in)
 			vmmode |= MODE_READ;
 		if (mode & std::ios::out)
-			vmmode |= MODE_WRITE;
+			vmmode |= MODE_CREATE_ALWAYS_WRITE;
 
-		if (vmmode & MODE_WRITE && !FileSystem::exists(file))
-			vmmode = MODE_CREATE_ALWAYS_WRITE;
+		//if (vmmode & MODE_WRITE && !FileSystem::exists(file))
+		//	vmmode = MODE_CREATE_ALWAYS_WRITE;
 
 		handle = vm_file_open((VMWSTR)file.u16string().c_str(), vmmode, 1);
 	}
@@ -71,11 +71,15 @@ private:
 	{
 		VMUINT nread = 0;
 		vm_file_read(handle, s, n, &nread);
+		if (nread != n)
+			exit(0);
 	}
 
 	virtual void write_impl(char* s, std::streamsize n)
 	{
 		VMUINT written = 0;
 		vm_file_write(handle, s, n, &written);
+		if (written != n)
+			exit(0);
 	}
 };
