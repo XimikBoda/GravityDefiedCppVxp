@@ -1,7 +1,7 @@
 #include "CanvasImpl.h"
 
 #include <stdexcept>
-#include <iostream>
+//#include <iostream>
 
 #include "Canvas.h"
 #include <vmgraph.h>
@@ -95,42 +95,6 @@ VMINT CanvasImpl::getRenderer()
 	return layer_hdl[0];
 }
 
-//void CanvasImpl::processEvents()
-//{
-//    SDL_Event e;
-//
-//    while (SDL_PollEvent(&e) != 0) {
-//        switch (e.type) {
-//        case SDL_QUIT:
-//            exit(0); // IMPROVE This is a super dumb way to finish the game, but it works
-//            break;
-//        case SDL_KEYDOWN: {
-//            int keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
-//            // std::cout << "Key pressed: " << keyCode << std::endl;
-//            if (keyCode != 0) {
-//                canvas->publicKeyPressed(keyCode);
-//            }
-//        } break;
-//        case SDL_KEYUP: {
-//            int sdlCode = e.key.keysym.sym;
-//            int keyCode = convertKeyCharToKeyCode(sdlCode);
-//            // std::cout << "Key released: " << keyCode << std::endl;
-//            if (keyCode != 0) {
-//                canvas->publicKeyReleased(keyCode);
-//            } else {
-//                if (sdlCode == SDLK_ESCAPE) {
-//                    // std::cout << "ESC released" << std::endl;
-//                    canvas->pressedEsc();
-//                }
-//            }
-//        } break;
-//        default:
-//            break;
-//        }
-//    }
-//}
-
 void CanvasImpl::setWindowTitle(const std::string& title)
 {
-	// SDL_SetWindowTitle(window, title.c_str());
 }

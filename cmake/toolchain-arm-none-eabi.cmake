@@ -58,7 +58,7 @@ set(MRE_SDK "$ENV{MRE_SDK}")
 # -fdata-sections       Place each data item into its own section in the output file.
 # -fomit-frame-pointer  Omit the frame pointer in functions that don’t need one.
 # -mabi=aapcs           Defines enums to be a variable sized type.
-set(OBJECT_GEN_FLAGS "-fpic -march=armv5te -fvisibility=hidden -mlittle-endian -fdata-sections -ffunction-sections -mthumb -D__MRE_COMPILER_GCC__")
+set(OBJECT_GEN_FLAGS "-fpic -march=armv5te -fvisibility=hidden -mlittle-endian -fdata-sections -ffunction-sections -mthumb -D__MRE_COMPILER_GCC__ -Wl,--wrap=sprintf ")
 
 set(CMAKE_C_FLAGS   "${OBJECT_GEN_FLAGS} -std=gnu99  " CACHE INTERNAL "C Compiler options")
 set(CMAKE_CXX_FLAGS "${OBJECT_GEN_FLAGS} -std=c++11 -fno-threadsafe-statics -fexceptions -fno-non-call-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics " CACHE INTERNAL "C++ Compiler options")
@@ -85,8 +85,8 @@ set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE INTERNAL "Linker options for debug bui
 # Options for RELEASE build
 # -Os   Optimize for size. -Os enables all -O2 optimizations.
 # -flto Runs the standard link-time optimizer.
-set(CMAKE_C_FLAGS_RELEASE "-O3" CACHE INTERNAL "C Compiler options for release build type")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3" CACHE INTERNAL "C++ Compiler options for release build type")
+set(CMAKE_C_FLAGS_RELEASE "-Os" CACHE INTERNAL "C Compiler options for release build type")
+set(CMAKE_CXX_FLAGS_RELEASE "-Os" CACHE INTERNAL "C++ Compiler options for release build type")
 set(CMAKE_ASM_FLAGS_RELEASE "" CACHE INTERNAL "ASM Compiler options for release build type")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "" CACHE INTERNAL "Linker options for release build type")
 

@@ -4,7 +4,13 @@ set(PROJECT_NAME "src")
 
 add_library(${PROJECT_NAME} STATIC 
     utils/Time.cpp
+    utils/Time.h
     utils/EmbedFileStream.cpp
+    utils/EmbedFileStream.h
+    utils/FileStream.h
+    utils/FileSystem.cpp
+    utils/FileSystem.h
+    utils/String.h
     main.cpp
     MathF16.cpp
     GameCanvas.cpp
