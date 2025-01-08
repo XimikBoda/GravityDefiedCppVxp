@@ -125,5 +125,5 @@ void RecordStore::log(std::string s)
 
 void RecordStore::setRecordStoreDir([[maybe_unused]] const char* progName)
 {
-    recordStoreDir = "D:\\GravityDefied\\recordStore";
+    recordStoreDir = "E:\\GravityDefied\\recordStore";
 }

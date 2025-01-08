@@ -3,13 +3,19 @@
 #include <cstring>
 #include <exception>
 
-CMRC_DECLARE(assets);
+#include "vmres.h"
 
 EmbedFileStream::EmbedFileStream(const std::string& embedFileName)
     : FileStream()
 {
-    auto embedFs = cmrc::assets::get_filesystem();
-    fileData = embedFs.open(embedFileName);
+    VMINT size = 0;
+    VMUINT8* res = vm_load_resource((char*)embedFileName.c_str(), &size);
+
+    fileData.resize(size);
+    std::memcpy(fileData.data(), res, size);
+
+    vm_free(res);
+
     buffPos = 0;
 }
 
@@ -20,7 +26,7 @@ void EmbedFileStream::setPos(std::streampos pos)
 
 void EmbedFileStream::read_impl(char* s, std::streamsize n)
 {
-    std::memcpy(s, fileData.begin() + buffPos, n);
+    std::memcpy(s, fileData.data() + buffPos, n);
     buffPos += n;
 }
 

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FileStream.h"
-
-#include <cmrc/cmrc.hpp>
+#include <vector>
 
 class EmbedFileStream : public FileStream {
 public:
@@ -15,5 +14,5 @@ private:
     virtual void write_impl(char* s, std::streamsize n) override;
 
     std::streampos buffPos = 0;
-    cmrc::file fileData;
+    std::vector<unsigned char> fileData;
 };
