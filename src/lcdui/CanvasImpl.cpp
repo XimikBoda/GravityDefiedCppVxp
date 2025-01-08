@@ -4,6 +4,7 @@
 //#include <iostream>
 
 #include "Canvas.h"
+#include "..\utils\Time.h"
 #include <vmgraph.h>
 #include <vmio.h>
 
@@ -78,6 +79,11 @@ CanvasImpl::~CanvasImpl()
 void CanvasImpl::repaint()
 {
 	vm_graphic_flush_layer(layer_hdl, 1);
+}
+
+void CanvasImpl::processEvents()
+{
+	Time::sleep(0);
 }
 
 int CanvasImpl::getWidth()
