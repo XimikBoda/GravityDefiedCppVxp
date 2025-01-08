@@ -23,12 +23,12 @@ public:
 		//if (vmmode & MODE_WRITE && !FileSystem::exists(file))
 		//	vmmode = MODE_CREATE_ALWAYS_WRITE;
 
-		handle = vm_file_open((VMWSTR)file.u16string().c_str(), vmmode, 1);
+		//handle = vm_file_open((VMWSTR)file.u16string().c_str(), vmmode, 1);
 	}
 
 	~FileStream()
 	{
-		vm_file_close(handle);
+		//vm_file_close(handle);
 	}
 
 	template <class T>
@@ -70,16 +70,16 @@ private:
 	virtual void read_impl(char* s, std::streamsize n)
 	{
 		VMUINT nread = 0;
-		vm_file_read(handle, s, n, &nread);
-		if (nread != n)
-			exit(0);
+		//vm_file_read(handle, s, n, &nread);
+		//if (nread != n)
+		//	exit(0);
 	}
 
 	virtual void write_impl(char* s, std::streamsize n)
 	{
 		VMUINT written = 0;
-		vm_file_write(handle, s, n, &written);
-		if (written != n)
-			exit(0);
+		//vm_file_write(handle, s, n, &written);
+		//if (written != n)
+		//	exit(0);
 	}
 };
