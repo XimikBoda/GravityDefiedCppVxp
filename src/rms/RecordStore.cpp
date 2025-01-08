@@ -2,13 +2,13 @@
 
 #include <cassert>
 #include <fstream>
-#include <iostream>
+//#include <iostream>
 #include <stdexcept>
 #include <numeric>
 #include <cstring>
 
 #ifdef WIN32
-#include <libgen.h>
+//#include <libgen.h>
 #else
 #include <unistd.h>
 #include <pwd.h>
@@ -16,6 +16,7 @@
 
 #include "RecordStoreException.h"
 #include "../utils/FileStream.h"
+#include "../utils/FileSystem.h"
 #include "../utils/String.h"
 
 RecordStore::RecordStore(std::filesystem::path filePath, RecordEnumerationImpl* records)
@@ -84,12 +85,12 @@ std::unique_ptr<RecordStore> RecordStore::createRecordStore(std::string name, bo
     log("createRecordStore(" + name + ", " + std::to_string(createIfNecessary) + ")");
     std::filesystem::path filePath = recordStoreDir / std::filesystem::path(name);
 
-    if (std::filesystem::exists(filePath)) {
+    if (FileSystem::exists(filePath)) {
         return std::unique_ptr<RecordStore>(new RecordStore(filePath, load(filePath)));
     }
 
     if (createIfNecessary) {
-        std::filesystem::create_directories(filePath.parent_path());
+        FileSystem::create_directories(filePath.parent_path());
 
         std::unique_ptr<RecordStore> rs(new RecordStore(filePath, new RecordEnumerationImpl()));
         rs->save();
@@ -119,22 +120,10 @@ void RecordStore::deleteRecordStore(std::string name)
 
 void RecordStore::log(std::string s)
 {
-    std::cout << s << std::endl;
+    //std::cout << s << std::endl;
 }
 
 void RecordStore::setRecordStoreDir([[maybe_unused]] const char* progName)
 {
-#ifdef WIN32
-    const char* base = dirname(strdup(progName));
-    recordStoreDir = std::filesystem::path(base) / "recordStore";
-#else
-    const char* homeDir = getenv("HOME");
-    if (!homeDir)
-        homeDir = getpwuid(getuid())->pw_dir;
-
-    if (!homeDir)
-        throw std::system_error(errno, std::system_category(), "Error getting home directory");
-
-    recordStoreDir = std::filesystem::path(homeDir) / ".GravityDefied";
-#endif
+    recordStoreDir = "D:\\GravityDefied\\recordStore";
 }
