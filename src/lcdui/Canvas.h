@@ -43,8 +43,14 @@ public:
     void setCommandListener(CommandListener* listener);
     void publicKeyPressed(int keyCode);
     void publicKeyReleased(int keyCode);
+    void publicPointerPressed(int x, int y);
+    void publicPointerReleased(int x, int y);
+    void publicPointerDragged(int x, int y);
     void pressedEsc();
     virtual void paint(Graphics* g) = 0;
     virtual void keyPressed(int keyCode) = 0;
     virtual void keyReleased(int keyCode) = 0;
+    virtual void pointerPressed(int x, int y) = 0;
+    virtual void pointerReleased(int x, int y) = 0;
+    virtual void pointerDragged(int x, int y) = 0;
 };

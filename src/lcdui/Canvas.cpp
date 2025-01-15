@@ -100,6 +100,22 @@ void Canvas::publicKeyReleased(int keyCode)
     keyReleased(keyCode);
 }
 
+void Canvas::publicPointerPressed(int x, int y)
+{
+    pointerPressed(x, y);
+}
+
+void Canvas::publicPointerReleased(int x, int y)
+{
+    pointerReleased(x, y);
+}
+
+void Canvas::publicPointerDragged(int x, int y)
+{
+    pointerDragged(x, y);
+}
+
+
 void Canvas::pressedEsc()
 {
     for (const auto& command : currentCommands) {

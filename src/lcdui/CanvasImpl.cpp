@@ -60,6 +60,24 @@ static void handle_keyevt(VMINT event, VMINT keycode) {
 	}
 }
 
+static void handle_penevt(VMINT event, VMINT x, VMINT y) {
+	switch (event) {
+	case VM_PEN_EVENT_TAP:
+		g_canvas->publicPointerPressed(x, y);
+		break;
+	case VM_PEN_EVENT_MOVE:
+	case VM_PEN_EVENT_REPEAT:
+	case VM_PEN_EVENT_LONG_TAP:
+	case VM_PEN_EVENT_DOUBLE_CLICK:
+		g_canvas->publicPointerDragged(x, y);
+		break;
+	case VM_PEN_EVENT_RELEASE:
+	case VM_PEN_EVENT_ABORT:
+		g_canvas->publicPointerReleased(x, y);
+		break;
+	}
+}
+
 CanvasImpl::CanvasImpl(Canvas* canvas)
 {
 	this->canvas = canvas;
@@ -69,6 +87,7 @@ CanvasImpl::CanvasImpl(Canvas* canvas)
 	height = vm_graphic_get_screen_height();
 
 	vm_reg_keyboard_callback(handle_keyevt);
+	vm_reg_pen_callback(handle_penevt);
 }
 
 CanvasImpl::~CanvasImpl()
