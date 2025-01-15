@@ -511,32 +511,31 @@ void GameCanvas::processPointerDragged(int x, int y) {
 
             field_206 = angle;
             //char var10 = '';
-            int var10 = (1<<16);
             if (51471 >= angle) {
                 var3 = -1;
             }
-            else if (angle < (int)(((long)var10 * 131072L) >> 16)) {
+            else if (angle < (int)(131072L)) {
                 var3 = -1;
                 var4 = 1;
             }
-            else if (angle < (int)(((long)var10 * 196608L) >> 16)) {
+            else if (angle < (int)(196608L)) {
                 var4 = 1;
             }
-            else if (angle < (int)(((long)var10 * 262144L) >> 16)) {
+            else if (angle < (int)(262144L)) {
                 var3 = 1;
                 var4 = 1;
             }
-            else if (angle < (int)(((long)var10 * 327680L) >> 16)) {
+            else if (angle < (int)(327680L)) {
                 var3 = 1;
             }
-            else if (angle < (int)(((long)var10 * 393216L) >> 16)) {
+            else if (angle < (int)(393216L)) {
                 var3 = 1;
                 var4 = -1;
             }
-            else if (angle < (int)(((long)var10 * 458752L) >> 16)) {
+            else if (angle < (int)(458752L)) {
                 var4 = -1;
             }
-            else if (angle < (int)(((long)var10 * 524288L) >> 16)) {
+            else if (angle < (int)(524288L)) {
                 var3 = -1;
                 var4 = -1;
             }

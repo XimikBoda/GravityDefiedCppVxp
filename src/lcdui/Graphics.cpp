@@ -89,15 +89,61 @@ void Graphics::fillRect(int x, int y, int w, int h)
  */
 void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int arcAngle)
 {
+	// draw complete ellipse if (0, 360) specified
+	if (startAngle == 0 && arcAngle == 360) {
+		//vm_graphic_ellipse_ex(layer_handle, x, y, width, heigth);
+	   // return;
+	}
+
 	// Draws an elliptical arc left-top at (x, y), with axes given by
 	// xradius and yradius, traveling from startAngle to endangle.
 	// Bresenham-based if complete
 	int xradius = width / 2, yradius = heigth / 2;
 	x += xradius;
 	y += yradius;
+
+	
 	if (xradius == 0 && yradius == 0) {
 		return;
 	}
+
+	int angle_step = asin(1.f / fmin(xradius, yradius)) / PI_CONV;
+	if (angle_step == 0)
+		angle_step = 1;
+
+	int lx = x + int(xradius * cos(startAngle * PI_CONV));
+	int ly = y - int(xradius * sin(startAngle * PI_CONV));
+
+	for (int angle = startAngle; angle < startAngle + arcAngle; angle += angle_step) {
+		int nx = x + int(xradius * cos(angle * PI_CONV));
+		int ny = y - int(xradius * sin(angle * PI_CONV));
+		drawLine(nx, ny, lx,ly);
+		lx = nx, ly = ny;
+	}
+
+	drawLine(
+		x + int(xradius * cos((startAngle + arcAngle) * PI_CONV)),
+		y - int(xradius * sin((startAngle + arcAngle) * PI_CONV)),
+		lx, ly);
+}
+
+vm_graphic_point polygon_buf[360 + 1];
+void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
+{
+	if (startAngle == 0 && arcAngle == 360) {
+		//vm_graphic_fill_ellipse_ex(layer_handle, x, y, w, h);
+		//return;
+	}
+
+	int xradius = w / 2, yradius = h / 2;
+	x += xradius;
+	y += yradius;
+	if (xradius == 0 && yradius == 0) {
+		return;
+	}
+
+	if (arcAngle > 360)
+		return;
 
 	// draw complete ellipse if (0, 360) specified
 	// if (startAngle == 0 && arcAngle == 360) {
@@ -105,12 +151,19 @@ void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int 
 	//     return;
 	// }
 
-	for (int angle = startAngle; angle < startAngle + arcAngle; angle++) {
-		drawLine(x + int(xradius * cos(angle * PI_CONV)),
-			y - int(yradius * sin(angle * PI_CONV)),
-			x + int(xradius * cos((angle + 1) * PI_CONV)),
-			y - int(yradius * sin((angle + 1) * PI_CONV)));
+	polygon_buf[0].x = x;
+	polygon_buf[0].y = y;
+
+	int polygon_count = 1;
+	
+
+	for (int angle = startAngle; angle < startAngle + arcAngle; angle+=5) {
+		polygon_buf[polygon_count].x = x + int(xradius * cos(angle * PI_CONV));
+		polygon_buf[polygon_count].y = y - int(xradius * sin(angle * PI_CONV));
+		polygon_count++;
 	}
+
+	vm_graphic_fill_polygon(layer_handle, polygon_buf, polygon_count);
 }
 
 // void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
@@ -177,48 +230,50 @@ int to_360(int ang)
 	return ang;
 }
 
-void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
-{
-	int endAngle = startAngle + arcAngle;
-	// startAngle = norm_ang(startAngle);
-	// endAngle = norm_ang(endAngle);
-	// SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
-	double a = w / 2.0, b = h / 2.0;
-	double e = sqrt(1.0 - (b * b) / (a * a));
-	for (int _y = y - b; _y < y + b; _y++) {
-		for (int _x = x - a; _x < x + a; _x++) {
-			// _putpixel(_x, _y);
-			// std::cout << atan2(_y, _x) << "\n";
-			// SDL_Log("_y = %d, _x = %d atan2 = %lf\n", _y, _x, atan2(_y - y, _x - x));
-			// if (atan2(_y - y, _x - x) >= startAngle*PI_CONV && atan2(_y - y, _x - x) <= endAngle*PI_CONV) {
-			//     _putpixel(_x, _y);
-			// }
-			// if (atan2(_y - y, _x - x) < 3.14/2.0) {
-			//     _putpixel(_x, _y);
-			// }
-			double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
 
-			// double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
-			// double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
-			double rad = b * b / (1 - e * e * cos(ang) * cos(ang));
-			double dist = ((_x - x) * (_x - x) + (_y - y) * (_y - y));
 
-			int ang2 = to_360(ang / PI_CONV);
-
-			if (ang2 >= to_360(startAngle)
-				&& ang2 <= to_360(endAngle)
-				&& dist <= rad) {
-				_putpixel(_x, _y);
-			}
-
-			if (endAngle > 360) {
-				if (ang2 < endAngle % 360 && dist <= rad) {
-					_putpixel(_x, _y);
-				}
-			}
-		}
-	}
-}
+//void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
+//{
+//	int endAngle = startAngle + arcAngle;
+//	// startAngle = norm_ang(startAngle);
+//	// endAngle = norm_ang(endAngle);
+//	// SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
+//	double a = w / 2.0, b = h / 2.0;
+//	double e = sqrt(1.0 - (b * b) / (a * a));
+//	for (int _y = y - b; _y < y + b; _y++) {
+//		for (int _x = x - a; _x < x + a; _x++) {
+//			// _putpixel(_x, _y);
+//			// std::cout << atan2(_y, _x) << "\n";
+//			// SDL_Log("_y = %d, _x = %d atan2 = %lf\n", _y, _x, atan2(_y - y, _x - x));
+//			// if (atan2(_y - y, _x - x) >= startAngle*PI_CONV && atan2(_y - y, _x - x) <= endAngle*PI_CONV) {
+//			//     _putpixel(_x, _y);
+//			// }
+//			// if (atan2(_y - y, _x - x) < 3.14/2.0) {
+//			//     _putpixel(_x, _y);
+//			// }
+//			double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
+//
+//			// double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
+//			// double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
+//			double rad = b * b / (1 - e * e * cos(ang) * cos(ang));
+//			double dist = ((_x - x) * (_x - x) + (_y - y) * (_y - y));
+//
+//			int ang2 = to_360(ang / PI_CONV);
+//
+//			if (ang2 >= to_360(startAngle)
+//				&& ang2 <= to_360(endAngle)
+//				&& dist <= rad) {
+//				_putpixel(_x, _y);
+//			}
+//
+//			if (endAngle > 360) {
+//				if (ang2 < endAngle % 360 && dist <= rad) {
+//					_putpixel(_x, _y);
+//				}
+//			}
+//		}
+//	}
+//}
 
 void Graphics::_putpixel(int x, int y)
 {
