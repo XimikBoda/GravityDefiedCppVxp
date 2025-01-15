@@ -153,7 +153,8 @@ void GameCanvas::renderGreyCircles() {
     int var3 = height2 + 40;
     graphics->setColor(150, 0, 0);
     if (pointerX != 0 || pointerY != 0) {
-        int var10000 = (int)(((long)((int)((long)field_206 * 11796480L >> 16)) << 32) / 205887L >> 16) >> 16;
+        //int var10000 = (int)(((long)((int)((long)field_206 * 11796480L >> 16)) << 32) / 205887L >> 16) >> 16;
+        int var10000 = ((field_206 * 180 / MathF16::PiF16));
         int var4 = var10000 - var10000 % 45;
         var4 -= 90;
         graphics->fillArc(centerX - size, var3 - size, 2 * size, 2 * size, var4 - 22, 45);
@@ -510,32 +511,32 @@ void GameCanvas::processPointerDragged(int x, int y) {
 
             field_206 = angle;
             //char var10 = '';
-            int var10 = 0xc90f;
+            int var10 = (1<<16);
             if (51471 >= angle) {
                 var3 = -1;
             }
-            else if (angle < (int)((long)var10 * 131072L >> 16)) {
+            else if (angle < (int)(((long)var10 * 131072L) >> 16)) {
                 var3 = -1;
                 var4 = 1;
             }
-            else if (angle < (int)((long)var10 * 196608L >> 16)) {
+            else if (angle < (int)(((long)var10 * 196608L) >> 16)) {
                 var4 = 1;
             }
-            else if (angle < (int)((long)var10 * 262144L >> 16)) {
+            else if (angle < (int)(((long)var10 * 262144L) >> 16)) {
                 var3 = 1;
                 var4 = 1;
             }
-            else if (angle < (int)((long)var10 * 327680L >> 16)) {
+            else if (angle < (int)(((long)var10 * 327680L) >> 16)) {
                 var3 = 1;
             }
-            else if (angle < (int)((long)var10 * 393216L >> 16)) {
+            else if (angle < (int)(((long)var10 * 393216L) >> 16)) {
                 var3 = 1;
                 var4 = -1;
             }
-            else if (angle < (int)((long)var10 * 458752L >> 16)) {
+            else if (angle < (int)(((long)var10 * 458752L) >> 16)) {
                 var4 = -1;
             }
-            else if (angle < (int)((long)var10 * 524288L >> 16)) {
+            else if (angle < (int)(((long)var10 * 524288L) >> 16)) {
                 var3 = -1;
                 var4 = -1;
             }
