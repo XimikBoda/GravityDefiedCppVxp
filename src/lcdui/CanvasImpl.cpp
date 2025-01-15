@@ -96,6 +96,11 @@ int CanvasImpl::getHeight()
 	return height;
 }
 
+bool CanvasImpl::hasPointerEvents()
+{
+	return vm_is_support_pen_touch();
+}
+
 VMINT CanvasImpl::getRenderer()
 {
 	return layer_hdl[0];

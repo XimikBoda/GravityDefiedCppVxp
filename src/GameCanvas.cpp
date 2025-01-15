@@ -14,6 +14,8 @@ GameCanvas::GameCanvas(Micro* micro)
     logoImage = std::make_unique<Image>("logo.png");
 
     // repaint();
+
+    this->isHasPinterEvents = this->hasPointerEvents();
     this->micro = micro;
     updateSizeAndRepaint();
     font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_MEDIUM);
@@ -64,6 +66,10 @@ void GameCanvas::updateSizeAndRepaint()
 {
     width = getWidth();
     height = height2 = getHeight();
+    if (isHasPinterEvents && field_205) {
+        height2 -= 80;
+    }
+
 
     repaint();
 }
@@ -138,6 +144,27 @@ int GameCanvas::addDy(int y)
 {
     return -y + dy;
 }
+
+void GameCanvas::renderGreyCircles() {
+    graphics->setColor(255, 255, 255);
+    graphics->fillRect(0, height2, width, 80);
+    int size = 35;
+    int centerX = width / 2;
+    int var3 = height2 + 40;
+    graphics->setColor(150, 0, 0);
+    if (pointerX != 0 || pointerY != 0) {
+        int var10000 = (int)(((long)((int)((long)field_206 * 11796480L >> 16)) << 32) / 205887L >> 16) >> 16;
+        int var4 = var10000 - var10000 % 45;
+        var4 -= 90;
+        graphics->fillArc(centerX - size, var3 - size, 2 * size, 2 * size, var4 - 22, 45);
+    }
+
+    graphics->setColor(0, 0, 0);
+    graphics->drawArc(centerX - size, var3 - size, 2 * size, 2 * size, 0, 360);
+    size = 2;
+    graphics->fillArc(centerX - size, var3 - size, 2 * size, 2 * size, 0, 360);
+}
+
 
 void GameCanvas::drawLine(int x, int y, int x2, int y2)
 {
@@ -441,6 +468,10 @@ void GameCanvas::drawGame(Graphics* g)
 
             var3 = gamePhysics->method_52();
             method_161(var3, false);
+            if (isHasPinterEvents && field_205) {
+                renderGreyCircles();
+            }
+
         }
 
         graphics = nullptr;
@@ -456,6 +487,84 @@ void GameCanvas::method_161(int var1, bool mode)
     setColor(255, 255, 255);
     graphics->fillRect(2, h - 3, (int)((int64_t)((width - 4) << 16) * (int64_t)var1 >> 16) >> 16, 1);
 }
+
+void GameCanvas::processPointerDragged(int x, int y) {
+    if (!micro->isInGameMenu) {
+        int var3 = 0;
+        int var4 = 0;
+        pointerX = x;
+        pointerY = y;
+        int var5 = x << 16;
+        int var6 = y << 16;
+        int var7 = width / 2 << 16;
+        int var8 = height2 + 40 << 16;
+        if (isHasPinterEvents && field_205) {
+            int angle = MathF16::atan2F16(var5 - var7, var6 - var8);
+
+            for (angle += 25735; angle < 0; angle += 411774) {
+            }
+
+            while (angle > 411774) {
+                angle -= 411774;
+            }
+
+            field_206 = angle;
+            //char var10 = '';
+            int var10 = 0xc90f;
+            if (51471 >= angle) {
+                var3 = -1;
+            }
+            else if (angle < (int)((long)var10 * 131072L >> 16)) {
+                var3 = -1;
+                var4 = 1;
+            }
+            else if (angle < (int)((long)var10 * 196608L >> 16)) {
+                var4 = 1;
+            }
+            else if (angle < (int)((long)var10 * 262144L >> 16)) {
+                var3 = 1;
+                var4 = 1;
+            }
+            else if (angle < (int)((long)var10 * 327680L >> 16)) {
+                var3 = 1;
+            }
+            else if (angle < (int)((long)var10 * 393216L >> 16)) {
+                var3 = 1;
+                var4 = -1;
+            }
+            else if (angle < (int)((long)var10 * 458752L >> 16)) {
+                var4 = -1;
+            }
+            else if (angle < (int)((long)var10 * 524288L >> 16)) {
+                var3 = -1;
+                var4 = -1;
+            }
+
+            gamePhysics->method_30(var3, var4);
+        }
+    }
+}
+
+void GameCanvas::pointerPressed(int x, int y) {
+    if (!micro->isInGameMenu) {
+        processPointerDragged(x, y);
+    }
+}
+
+void GameCanvas::pointerReleased(int x, int y) {
+    if (!micro->isInGameMenu) {
+        pointerX = 0;
+        pointerY = 0;
+        gamePhysics->processPointerReleased();
+    }
+}
+
+void GameCanvas::pointerDragged(int x, int y) {
+    if (!micro->isInGameMenu) {
+        processPointerDragged(x, y);
+    }
+}
+
 
 void GameCanvas::method_163(int var1)
 {

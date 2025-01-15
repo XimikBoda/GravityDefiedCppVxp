@@ -22,6 +22,7 @@ public:
     void repaint();
     int getWidth();
     int getHeight();
+    bool hasPointerEvents();
 
     VMINT getRenderer();
     void processEvents();

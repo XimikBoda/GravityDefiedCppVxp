@@ -46,6 +46,7 @@ private:
     int bodyPartsSpriteWidth[3] = { 0, 0, 0 };
     int bodyPartsSpriteHeight[3] = { 0, 0, 0 };
     inline static int defaultFontWidth00 = 25;
+    bool isHasPinterEvents = false;
     bool field_205 = true;
     int field_206;
     std::unique_ptr<Image> screenBuffer;
@@ -53,6 +54,8 @@ private:
     int timerId = 0;
     std::vector<Timer> timers;
     Command* commandMenu;
+    int pointerX = 0;
+    int pointerY = 0;
     inline static std::string stringWithTime = "";
     std::vector<std::string> time10MsToStringCache = std::vector<std::string>(100);
     int timeInSeconds = -1;
@@ -80,6 +83,7 @@ public:
     int getDx();
     int addDx(int x);
     int addDy(int y);
+    void renderGreyCircles();
     void drawLine(int x, int y, int x2, int y2);
     void drawLineF16(int x, int y, int x2, int y2);
     void renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int bodyPartNo);
@@ -102,6 +106,10 @@ public:
     void setColor(int red, int green, int blue);
     void drawGame(Graphics* g);
     void method_161(int var1, bool mode);
+    void processPointerDragged(int x, int y);
+    void pointerPressed(int x, int y);
+    void pointerReleased(int x, int y);
+    void pointerDragged(int x, int y);
     void method_163(int var1);
     void paint(Graphics* g);
     void init(GamePhysics* gamePhysics);

@@ -28,6 +28,11 @@ int Canvas::getHeight()
     return impl->getHeight();
 }
 
+bool Canvas::hasPointerEvents()
+{
+    return impl->hasPointerEvents();
+}
+
 void Canvas::setWindowTitle(const std::string& title)
 {
     impl->setWindowTitle(title);
